@@ -17,7 +17,6 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.email
 
-
 class User_Role_Permissions(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
