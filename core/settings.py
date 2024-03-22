@@ -41,7 +41,9 @@ INSTALLED_APPS = [
 
     #REST Framework
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -113,6 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 #CORS CONFIG
 CORS_ALLOWED_ALL_ORIGINS = True
 
+AUTH_USER_MODEL = 'accounts.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
