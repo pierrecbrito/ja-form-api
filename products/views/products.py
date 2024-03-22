@@ -31,4 +31,24 @@ class ProducDetail(APIView):
         return Response({
             "produto": serializer.data
         })
+    
+    def put(self, request, product_id):
+        product = Product.objects.filter(id=product_id)
+
+        if not product.exists():
+            raise APIException('Produto não encontrado')
+        
+        product = product.first()
+
+        product.name = request.data.get('name') or product.name
+        product.price_setup = request.data.get('price_setup') or product.price_setup
+        product.price_after_sales = request.data.get('price_after_sales') or product.price_after_sales
+
+        product.save()
+        
+        serializer = ProductSerializer(product)
+
+        return Response({
+            "produto": serializer.data
+        })
 
