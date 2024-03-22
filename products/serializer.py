@@ -10,3 +10,8 @@ class ProductSerializer(ModelSerializer):
             'price_setup',
             'price_after_sales'
         )
+
+        extra_kwargs = {
+            'price_setup': {'max_digits': 10, 'decimal_places': 2},
+            'price_after_sales': {'max_digits': 10, 'decimal_places': 2}
+        }

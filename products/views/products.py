@@ -26,7 +26,7 @@ class ProducDetail(APIView):
         if not product.exists():
             raise APIException('Produto não encontrado')
 
-        serializer = ProductSerializer(product)
+        serializer = ProductSerializer(product.first())
 
         return Response({
             "produto": serializer.data
