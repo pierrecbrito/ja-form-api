@@ -3,8 +3,10 @@ from config.models import GeneralConfig
 from config.serializer import ConfigSerializer
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
+from products.utils.permissions import MinimumAuthorization, ConfigPermission
 
 class Config(APIView):
+    permission_classes = [MinimumAuthorization]
 
     def get(self, request):
         configs = GeneralConfig.objects.all()
@@ -16,6 +18,7 @@ class Config(APIView):
         })
     
 class ConfigDetail(APIView):
+    permission_classes = [MinimumAuthorization]
 
     def get(self, request, config_id):
         config = GeneralConfig.objects.filter(id=config_id)

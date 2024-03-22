@@ -18,3 +18,15 @@ class MinimumAuthorization(permissions.BasePermission):
     def has_permission(self, request, _view):
         return check_permission(request.user)
 
+class ProductPermission(permissions.BasePermission):
+    message = 'Você não pode alterar um produto.'
+
+    def has_permission(self, request, _view):
+        return request.user.role_id < 3
+    
+class ConfigPermission(permissions.BasePermission):
+    message = 'Você não pode acessar configurações.'
+
+    def has_permission(self, request, _view):
+        return request.user.role_id < 3
+
