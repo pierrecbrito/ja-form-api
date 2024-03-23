@@ -6,9 +6,18 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
 class Products(APIView):
-    permission_classes = [MinimumAuthorization]
+    """
+    Gerenciador de views para produtos no geral.
+    """
+    permission_classes = [MinimumAuthorization] 
 
     def get(self, request):
+        """
+        Retorna uma lista de produtos na resposta HTTP.
+
+        :param request: Requisição HTTP.
+        :return todos os produtos cadastrados.
+        """
         products = Product.objects.all()
 
         serializer = ProductSerializer(products, many=True)
@@ -18,9 +27,20 @@ class Products(APIView):
         })
     
 class ProducDetail(APIView):
+    """
+    Gerenciador de views para produtos específicos.
+    """
     permission_classes = [MinimumAuthorization]
 
     def get(self, request, product_id):
+        """
+        Retorna o produto com id recebido pela requisição HTTP. Retorna uma APIException em 
+        caso de não encontrar um produto.
+
+        :param request: requisição HTTP.
+        :param produto_id: ID do produto no banco.
+        :return produto com ID passado.
+        """
         product = Product.objects.filter(id=product_id)
 
         if not product.exists():
@@ -33,6 +53,15 @@ class ProducDetail(APIView):
         })
     
     def put(self, request, product_id):
+        """
+        Atualiza os dados do produto no banco. Necessário que o 'name', 'price_setup', 'price_after_sales'
+        (não necessariamente todos) sejam passados pelo corpo da requisição. Retorna uma APIException em 
+        caso de não encontrar um produto.
+
+        :param request: requisição HTTP.
+        :param product_id: ID do produto a ser atualizado
+        :return produto atualizado.
+        """
         product = Product.objects.filter(id=product_id)
 
         if not product.exists():
