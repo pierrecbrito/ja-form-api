@@ -114,9 +114,9 @@ class DocumentoPosVendasSerializer(ModelSerializer):
     documento = serializers.SerializerMethodField()
 
     class Meta:
-        model = Documento_Instalacao
+        model = Documento_Pos_Venda
         fields = (
-            'documento'
+            'documento',
         )
 
     def get_documento(self, obj):
