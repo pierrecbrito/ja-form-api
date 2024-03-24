@@ -20,7 +20,6 @@ class Documents(APIView):
         })
 
     def post(self, request):
-    
         return criar_documento_completo(request)
         
 

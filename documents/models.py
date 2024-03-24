@@ -19,7 +19,7 @@ class Cabecalho(models.Model):
     endereco = models.CharField(max_length=40)
     cep = models.CharField(max_length=10)
     cidade = models.CharField(max_length=40)
-    telefone = models.CharField(max_length=14)
+    telefone = models.CharField(max_length=20)
     info_adicionais = models.ForeignKey(Info_Adicionais, on_delete=models.CASCADE)
     criado_em = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)

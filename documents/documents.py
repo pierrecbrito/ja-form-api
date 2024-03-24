@@ -10,6 +10,7 @@ def criar_informacoes_adicionais(request):
 
 def criar_cabecalho(request):
     cabecalho = request.data.get('documento').get('cabecalho')
+    print(cabecalho)
 
     if not cabecalho or not cabecalho_validado(cabecalho):
         raise APIException("O cabeçalho do documento não foi enviado ou não foi enviado adequadamente.")
@@ -25,28 +26,25 @@ def criar_cabecalho(request):
         total = cabecalho['informacoes_adicionais']['total']
     )
     
-    try:
-        novo_cabecalho = Cabecalho.objects.create(
-            nome=cabecalho['nome'],
-            cnpj=cabecalho['cnpj'],
-            cpf=cabecalho['cpf'],
-            endereco=cabecalho['endereco'],
-            cidade=cabecalho['cidade'],
-            cep=cabecalho['cep'],
-            telefone=cabecalho['telefone'],
-            total=cabecalho['total'],
-            comissao=cabecalho['comissao'],
-            usuario_criador=request.user,
-            info_adicionais=novo_info_adicionais
-        )
-    except:
-        novo_info_adicionais.delete()#Em caso de erro no cabeçalho, apaga o infor adicional já cadastrado
-        return False
+   
+    novo_cabecalho = Cabecalho.objects.create(
+        nome=cabecalho['nome'],
+        cnpj=cabecalho['cnpj'],
+        cpf=cabecalho['cpf'],
+        endereco=cabecalho['endereco'],
+        cidade=cabecalho['cidade'],
+        cep=cabecalho['cep'],
+        telefone=cabecalho['telefone'],
+        total=cabecalho['total'],
+        comissao=cabecalho['comissao'],
+        usuario_criador=request.user,
+        info_adicionais=novo_info_adicionais
+    )
 
     return novo_cabecalho
     
 def cabecalho_validado(cabecalho):
-    campos = ['nome', 'cpf', 'endereco', 'cidade', 'cep', 'telefone', 'total', 'comissao', 'aprovado', 'informacoes_adicionais']
+    campos = ['nome', 'cnpj', 'cpf', 'endereco', 'cidade', 'cep', 'telefone', 'total', 'comissao', 'informacoes_adicionais']
 
     for campo in campos:
         if campo not in cabecalho or cabecalho[campo] == '' or cabecalho[campo] == 0:
@@ -105,12 +103,12 @@ def criar_documentos_de_instalacao(request, cabecalho):
 
         novo_documento = Documento_Instalacao.objects.create(
             documento = novo_documento_geral,
-            dono = get_user_por_id(documento['dono']),
+            dono = get_user_por_id(documento['dono']['id']),
             nota_fiscal = documento['nota_fiscal']
         )
 
         for parceiro in documento['parceiros']:
-            novo_documento.parceiros.add(get_user_por_id(parceiro))
+            novo_documento.parceiros.add(get_user_por_id(parceiro['id']))
 
         novo_documento.save()
 
@@ -210,28 +208,20 @@ def criar_documento_completo(request):
         raise APIException('Não foi enviado nenhum documento.')
     
     
-    try:
-        cabecalho = criar_cabecalho(request)
-        documentos_instalacao = criar_documentos_de_instalacao(request, cabecalho)
-        documento_pos_venda = criar_documentos_de_pos_vendas(request, cabecalho)
+ 
+    cabecalho = criar_cabecalho(request)
+    documentos_instalacao = criar_documentos_de_instalacao(request, cabecalho)
+    documento_pos_venda = criar_documentos_de_pos_vendas(request, cabecalho)
 
-        serializer = CabecalhoSerializer(cabecalho)
-        serializer2 = DocumentoInstalacaoSerializer(documentos_instalacao, many=True)
-        serializer3 = DocumentoPosVendasSerializer(documento_pos_venda)
-        
-        return Response({
-            "cabecalho": serializer.data,
-            "documentos_instalacao": serializer2.data,
-            "documento_pos_venda": serializer3.data
-        })
-    except:
-        cabecalho.info_adicionais.delete()
-        cabecalho.delete()
-        for documento in documentos_instalacao:
-            documento.delete()
-        documento_pos_venda.delete()
-
-        raise APIException('Não foi possível salvar os dados.')
+    serializer = CabecalhoSerializer(cabecalho)
+    serializer2 = DocumentoInstalacaoSerializer(documentos_instalacao, many=True)
+    serializer3 = DocumentoPosVendasSerializer(documento_pos_venda)
+    
+    return Response({
+        "cabecalho": serializer.data,
+        "documentos_instalacao": serializer2.data,
+        "documento_pos_venda": serializer3.data
+    })  
     
 
     
