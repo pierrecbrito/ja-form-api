@@ -110,7 +110,6 @@ def criar_documentos_de_instalacao(request, cabecalho):
         )
 
         for parceiro in documento['parceiros']:
-            print(parceiro)
             novo_documento.parceiros.add(get_user_por_id(parceiro))
 
         novo_documento.save()
