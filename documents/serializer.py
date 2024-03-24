@@ -48,7 +48,7 @@ class CabecalhoSerializer(ModelSerializer):
 
     def get_usuario_criador(self, obj):
         usuario_criador = obj.usuario_criador
-        serializer = InfoAdicionaisSerializer(usuario_criador)
+        serializer = UserSerializer(usuario_criador)
         
         return serializer.data
 

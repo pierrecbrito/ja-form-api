@@ -20,11 +20,8 @@ class Documents(APIView):
         })
 
     def post(self, request):
-        criar_documento_completo(request)
-        
-        return Response({
-            "success": True
-        })
+    
+        return criar_documento_completo(request)
         
 
 class DocumentInstalacaoDetail(APIView):
