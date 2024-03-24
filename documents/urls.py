@@ -3,4 +3,5 @@ from documents.views.documents import Documents
 
 urlpatterns = [
     path('', Documents.as_view()),
+    path('cabecalho/<int:cabecalho_id>')
 ]
