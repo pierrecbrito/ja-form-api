@@ -46,8 +46,9 @@ INSTALLED_APPS = [
     'accounts',
     'products',
     'config',
-    'documents'
+    'documents',
 ]
+
 
 MIDDLEWARE = [
     #CORS
@@ -157,3 +158,12 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(hours=1),
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=5)
 }
+
+#E-configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'carlospierre07@gmail.com'
+EMAIL_HOST_PASSWORD = 'swto cohq nvhf zdrx'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False

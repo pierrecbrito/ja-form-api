@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from documents.documents import criar_documento_completo
 from products.utils.permissions import MinimumAuthorization
+from documents.utils.send_email import enviar_email
+import datetime
 
 class Documents(APIView):
     permission_classes = [MinimumAuthorization]
@@ -60,18 +62,20 @@ class DocumentPosVendaDetail(APIView):
         })
 
 class CabecalhoToggleAprovado(APIView):
-    permission_classes = [MinimumAuthorization]
     
-    def put(self, request, cabecalho_id):
+    def post(self, request, cabecalho_id):
         cabecalho =  Cabecalho.objects.filter(id=cabecalho_id)
 
-        if not Cabecalho.exists():
-            raise APIException("Documento não encontrado.") 
+        if not cabecalho.exists():
+            raise APIException("Cabeçalho não encontrado.") 
         
         cabecalho = cabecalho.first()
 
         cabecalho.aprovado = not cabecalho.aprovado
         cabecalho.save()
+
+        if not cabecalho.aprovado:
+            enviar_email('DOCUMENTO INDEFERIDO', 'O documento de cabeçalho do documento do ' + str(cabecalho.nome) + ' e cadastrado em ' +  cabecalho.criado_em.strftime('%d-%m-%Y %H:%M') +  ' está indeferido pelo setor de controle. Por favor, análise os dados contidos nele.')
 
         serializer = CabecalhoSerializer(cabecalho)
 

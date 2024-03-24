@@ -6,9 +6,6 @@ def check_permission(user):
     if not user.is_authenticated:
         return False
     
-    if user.role_id == 1:#Se for Master, pode tudo.
-        return True
-    
     return True
 
 
