@@ -17,11 +17,11 @@ class Authentication():
         """
         user = User.objects.filter(email=email)#Busca algum usuário com o e-mail
         if not user.exists():
-            raise AuthenticationFailed('E-mail/Senha não encontrado.')
+            raise AuthenticationFailed('E-mail/senha incorretos.')
         
         user = user.first() 
         if not check_password(password=password, encoded=user.password): #Verifica se a senha está correta
-            raise AuthenticationFailed('E-mail/Senha não encontrado.')
+            raise AuthenticationFailed('E-mail/Senha incorretos.')
         
         return user
     

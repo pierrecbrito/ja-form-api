@@ -5,17 +5,14 @@ from rest_framework.response import Response
 from products.models import Product
 from accounts.models import User
 
-def criar_informacoes_adicionais(request):
-    distancia = request.data.get('')
 
 def criar_cabecalho(request):
     cabecalho = request.data.get('documento').get('cabecalho')
-    print(cabecalho)
 
-    if not cabecalho or not cabecalho_validado(cabecalho):
+    if cabecalho is None or not cabecalho_validado(cabecalho):
         raise APIException("O cabeçalho do documento não foi enviado ou não foi enviado adequadamente.")
     
-    if not informacoes_adicionais_validado(cabecalho['informacoes_adicionais']):
+    if not 'informacoes_adicionais' in cabecalho or not informacoes_adicionais_validado(cabecalho['informacoes_adicionais']):
         raise APIException("As informações adicionais do documento não foi enviado ou não foi enviado adequadamente.")
     
     novo_info_adicionais = Info_Adicionais.objects.create(
@@ -26,7 +23,6 @@ def criar_cabecalho(request):
         total = cabecalho['informacoes_adicionais']['total']
     )
     
-   
     novo_cabecalho = Cabecalho.objects.create(
         nome=cabecalho['nome'],
         cnpj=cabecalho['cnpj'],
@@ -81,8 +77,11 @@ def criar_documentos_de_instalacao(request, cabecalho):
     documentos = request.data.get('documento').get('documentos_instalacao')
     novos_documentos = []
 
+    if len(documentos) == 0 or len(documentos) > 3:
+        return []
+
     if not documentos_instalacao_validados(documentos):
-        raise APIException("Documentos de instalação estão incorretos.")
+        raise APIException("Documentos de instalação estão incorretos ou incompletos.")
     
     produto = get_produto_por_id(documentos[0]['produto'])
 
@@ -149,8 +148,11 @@ def documentos_instalacao_validados(documentos):
 def criar_documentos_de_pos_vendas(request, cabecalho):
     documento = request.data.get('documento').get('documento_pos_venda')
 
+    if not documento or documento is None:
+        return None
+
     if not documento_pos_venda_validado(documento):
-        raise APIException("Documentos de instalação estão incorretos.")
+        raise APIException("Documento de pós-venda está incorreto ou faltando dados.")
     
     produto = get_produto_por_id(documento['produto'])
 
@@ -207,21 +209,48 @@ def criar_documento_completo(request):
     if not documento:
         raise APIException('Não foi enviado nenhum documento.')
     
+
+    resposta = {}
     
- 
-    cabecalho = criar_cabecalho(request)
-    documentos_instalacao = criar_documentos_de_instalacao(request, cabecalho)
-    documento_pos_venda = criar_documentos_de_pos_vendas(request, cabecalho)
+    
+    cabecalho = None
+    documentos_instalacao = []
+    documento_pos_venda = None
+
+    try:
+        cabecalho = criar_cabecalho(request)
+        documentos_instalacao = criar_documentos_de_instalacao(request, cabecalho)
+        documento_pos_venda = criar_documentos_de_pos_vendas(request, cabecalho)
+    except APIException as erro:
+        if cabecalho is not None:
+            cabecalho.info_adicionais.delete()
+            cabecalho.delete()
+        if len(documentos_instalacao) > 0:
+            for documento_instalacao in documentos_instalacao:
+                documento_instalacao.delete()
+        if documento_pos_venda is not None:
+            documento_pos_venda.delete()
+
+        raise erro
+
 
     serializer = CabecalhoSerializer(cabecalho)
-    serializer2 = DocumentoInstalacaoSerializer(documentos_instalacao, many=True)
-    serializer3 = DocumentoPosVendasSerializer(documento_pos_venda)
+    resposta['cabecalho'] = serializer.data
     
-    return Response({
-        "cabecalho": serializer.data,
-        "documentos_instalacao": serializer2.data,
-        "documento_pos_venda": serializer3.data
-    })  
+    if len(documentos_instalacao) > 0:
+        serializer2 = DocumentoInstalacaoSerializer(documentos_instalacao, many=True)
+        resposta['documentos_instalacao'] = serializer2.data
+    
+    if documento_pos_venda is not None:
+        serializer3 = DocumentoPosVendasSerializer(documento_pos_venda)
+        resposta['documento_pos_venda'] = serializer3.data
+    
+    if len(documentos_instalacao) == 0 and documento_pos_venda is None:
+        cabecalho.info_adicionais.delete()
+        cabecalho.delete()
+        raise APIException('Nenhum documento foi enviado!')
+        
+    return Response(resposta)  
     
 
     
