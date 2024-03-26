@@ -31,6 +31,7 @@ class CabecalhoSerializer(ModelSerializer):
             'endereco',
             'cep',
             'cidade',
+            'email',
             'telefone',
             'info_adicionais',
             'criado_em',

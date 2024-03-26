@@ -26,6 +26,7 @@ class Cabecalho(models.Model):
     comissao = models.DecimalField(max_digits=10, decimal_places=2)
     usuario_criador = models.ForeignKey(User, on_delete=models.CASCADE)
     aprovado = models.BooleanField(default=True)
+    email = models.EmailField(max_length=250)
 
     def __str__(self):
         return self.nome

@@ -33,6 +33,7 @@ def criar_cabecalho(request):
         telefone=cabecalho['telefone'],
         total=cabecalho['total'],
         comissao=cabecalho['comissao'],
+        email=cabecalho['email'],
         usuario_criador=request.user,
         info_adicionais=novo_info_adicionais
     )
@@ -40,7 +41,7 @@ def criar_cabecalho(request):
     return novo_cabecalho
     
 def cabecalho_validado(cabecalho):
-    campos = ['nome', 'cnpj', 'cpf', 'endereco', 'cidade', 'cep', 'telefone', 'total', 'comissao', 'informacoes_adicionais']
+    campos = ['nome', 'cnpj', 'cpf', 'endereco', 'cidade', 'cep', 'telefone', 'total', 'email', 'comissao', 'informacoes_adicionais']
 
     for campo in campos:
         if campo not in cabecalho or cabecalho[campo] == '' or cabecalho[campo] == 0:
