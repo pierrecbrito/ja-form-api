@@ -1,24 +1,11 @@
 from rest_framework.serializers import ModelSerializer
-from documents.models import Info_Adicionais, Cabecalho, Documento, Documento_Instalacao, Documento_Pos_Venda
+from documents.models import Cobranca, Cabecalho, Documento, Documento_Instalacao, Documento_Pos_Venda
 from rest_framework import serializers
 from accounts.serializers import UserSerializer
 from products.serializer import ProductSerializer
 
-class InfoAdicionaisSerializer(ModelSerializer):
-    
-    class Meta:
-        model = Info_Adicionais
-        fields = (
-            'id',
-            'distancia',
-            'horas',
-            'valor_km',
-            'valor_hora',
-            'total'
-        )
 
 class CabecalhoSerializer(ModelSerializer):
-    info_adicionais = serializers.SerializerMethodField()
     usuario_criador = serializers.SerializerMethodField()
 
     class Meta:
@@ -33,7 +20,6 @@ class CabecalhoSerializer(ModelSerializer):
             'cidade',
             'email',
             'telefone',
-            'info_adicionais',
             'criado_em',
             'total',
             'comissao',
@@ -41,11 +27,6 @@ class CabecalhoSerializer(ModelSerializer):
             'aprovado'
         )
     
-    def get_info_adicionais(self, obj):
-        info_adicionais = obj.info_adicionais
-        serializer = InfoAdicionaisSerializer(info_adicionais)
-        
-        return serializer.data
 
     def get_usuario_criador(self, obj):
         usuario_criador = obj.usuario_criador
@@ -70,6 +51,7 @@ class DocumentoSerializer(ModelSerializer):
             'servicos_executados',
             'testes_realizados',
             'total',
+            'comissao',
             'cabecalho'
         )
 
@@ -118,6 +100,27 @@ class DocumentoPosVendasSerializer(ModelSerializer):
         model = Documento_Pos_Venda
         fields = (
             'documento',
+        )
+
+    def get_documento(self, obj):
+        documento = obj.documento
+        serializer = DocumentoSerializer(documento)
+        
+        return serializer.data
+
+
+class CobrancaSerializer(ModelSerializer):
+    documento = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Cobranca
+        fields = (
+            'distancia',
+            'horas',
+            'valor_km',
+            'valor_hora',
+            'total',
+            'documento'
         )
 
     def get_documento(self, obj):

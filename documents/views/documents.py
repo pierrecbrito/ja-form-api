@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
-from documents.models import Documento_Instalacao, Documento_Pos_Venda, Cabecalho
-from documents.serializer import DocumentoInstalacaoSerializer, DocumentoPosVendasSerializer, CabecalhoSerializer
+from documents.models import Documento_Instalacao, Documento_Pos_Venda, Cabecalho, Cobranca
+from documents.serializer import DocumentoInstalacaoSerializer, DocumentoPosVendasSerializer, CabecalhoSerializer, CobrancaSerializer
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from documents.documents import criar_documento_completo
@@ -14,13 +14,16 @@ class Documents(APIView):
     def get(self, request):
         documents_setup = Documento_Instalacao.objects.all()
         documents_after_sales = Documento_Pos_Venda.objects.all()
+        cobrancas = Cobranca.objects.all()
 
         serializer1 = DocumentoInstalacaoSerializer(documents_setup, many=True)
         serializer2 = DocumentoPosVendasSerializer(documents_after_sales, many=True)
+        serializer3 = CobrancaSerializer(cobrancas, many=True)
 
         return Response({
             "documentos_instalacao": serializer1.data,
-            "documentos_pos_venda": serializer2.data
+            "documentos_pos_venda": serializer2.data,
+            "cobrancas": serializer3.data
         })
 
     def post(self, request):

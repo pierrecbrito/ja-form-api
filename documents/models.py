@@ -2,16 +2,6 @@ from django.db import models
 from accounts.models import User
 from products.models import Product
 
-class Info_Adicionais(models.Model):
-    distancia = models.PositiveBigIntegerField()
-    horas = models.PositiveBigIntegerField()
-    valor_km = models.DecimalField(max_digits=10, decimal_places=2)
-    valor_hora = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return str(self.total)
-
 class Cabecalho(models.Model):
     nome = models.CharField(max_length=80)
     cnpj = models.CharField(max_length=20)
@@ -20,7 +10,6 @@ class Cabecalho(models.Model):
     cep = models.CharField(max_length=10)
     cidade = models.CharField(max_length=40)
     telefone = models.CharField(max_length=20)
-    info_adicionais = models.ForeignKey(Info_Adicionais, on_delete=models.CASCADE)
     criado_em = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     comissao = models.DecimalField(max_digits=10, decimal_places=2)
@@ -43,7 +32,18 @@ class Documento(models.Model):
     testes_realizados = models.CharField(max_length=100)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     cabecalho = models.ForeignKey(Cabecalho, on_delete=models.CASCADE)
+    comissao = models.DecimalField(max_digits=10, decimal_places=2)
 
+class Cobranca(models.Model):
+    distancia = models.PositiveBigIntegerField()
+    horas = models.PositiveBigIntegerField()
+    valor_km = models.DecimalField(max_digits=10, decimal_places=2)
+    valor_hora = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    documento = models.ForeignKey(Documento, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.total)
 
 class Documento_Instalacao(models.Model):
     documento = models.ForeignKey(Documento, on_delete=models.CASCADE)
